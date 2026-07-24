@@ -1,0 +1,179 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="author" content="David Lee Wise / ROOT0 / TriPod LLC">
+<title>THE FIRST LIGHT · OURANOS · UD0</title>
+<style>
+*{box-sizing:border-box}
+:root{--blue:#3a5bbf;--blue2:#2a3f7a;--ink:#26324f;--gold:#c8952e;--dim:#6d7186;
+  --grn:#2e8b57;--red:#b0463a;
+  --panel:rgba(252,248,238,.78);--edge:rgba(58,91,191,.28);--edge2:rgba(58,91,191,.14)}
+html,body{margin:0;height:100%}
+body{background:#f2ecdd;color:var(--ink);font:15px/1.55 'Segoe UI',system-ui,-apple-system,Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+#bg{position:fixed;inset:0;width:100vw;height:100vh;z-index:0;display:block}
+.wrap{position:relative;z-index:2;max-width:940px;margin:0 auto;padding:26px 20px 60px}
+.dtag{font:600 11px/1 ui-monospace,'Cascadia Code','Segoe UI Mono',monospace;letter-spacing:.32em;text-transform:uppercase;color:var(--blue2)}
+.dtag b{color:var(--blue)}
+h1{margin:.35em 0 .1em;font-size:clamp(26px,4.6vw,42px);font-weight:800;letter-spacing:.01em;color:#1e2842;text-shadow:0 1px 0 rgba(255,255,255,.5)}
+.sub{color:#3d4664;max-width:66ch;margin:.2em 0 0}
+.tier{display:inline-flex;gap:6px;align-items:center;margin-top:14px;font:600 11px/1 ui-monospace,monospace;letter-spacing:.14em}
+.chip{padding:5px 10px;border-radius:999px;border:1px solid var(--edge);background:var(--panel)}
+.chip.lit{color:var(--grn);border-color:rgba(46,139,87,.5)}
+.chip.amb{color:var(--gold);border-color:rgba(200,149,46,.55)}
+.chip.wall{color:var(--red);border-color:rgba(176,70,58,.45)}
+.card{margin-top:20px;background:var(--panel);border:1px solid var(--edge);border-radius:16px;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);box-shadow:0 14px 40px rgba(40,60,120,.14)}
+.stagewrap{padding:14px}
+#stage{width:100%;height:auto;display:block;border-radius:10px;background:rgba(250,246,236,.72);border:1px solid rgba(58,91,191,.14)}
+.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:0 14px 14px}
+.btn{cursor:pointer;border:1px solid var(--edge);background:rgba(238,242,252,.85);color:var(--ink);padding:9px 14px;border-radius:10px;font:600 13px/1 'Segoe UI',system-ui;letter-spacing:.02em;transition:.15s}
+.btn:hover{border-color:var(--blue);box-shadow:0 0 14px rgba(58,91,191,.22)}
+.btn.on{background:linear-gradient(180deg,#4f70d6,#3a5bbf);border-color:#3a5bbf;color:#f4f7ff}
+.rng{display:flex;align-items:center;gap:8px;font:600 12px ui-monospace,monospace;color:var(--blue2)}
+input[type=range]{accent-color:var(--blue)}
+.readout{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:var(--edge2);border-top:1px solid var(--edge);border-radius:0 0 16px 16px;overflow:hidden}
+.ro{background:var(--panel);padding:11px 14px}
+.ro .k{font:600 10px ui-monospace,monospace;letter-spacing:.16em;text-transform:uppercase;color:var(--blue2)}
+.ro .v{font:700 19px ui-monospace,monospace;margin-top:3px;color:var(--ink)}
+.ro .v.g{color:var(--grn)} .ro .v.r{color:var(--red)} .ro .v.a{color:var(--gold)} .ro .v.c{color:var(--blue)}
+.honesty{margin-top:22px;display:grid;gap:10px}
+.hz{background:var(--panel);border:1px solid var(--edge);border-left-width:3px;border-radius:10px;padding:12px 15px}
+.hz.lit{border-left-color:var(--grn)} .hz.amb{border-left-color:var(--gold)} .hz.wall{border-left-color:var(--red)}
+.hz h4{margin:0 0 4px;font:700 11px ui-monospace,monospace;letter-spacing:.16em}
+.hz.lit h4{color:var(--grn)} .hz.amb h4{color:var(--gold)} .hz.wall h4{color:var(--red)}
+.hz p{margin:0;color:#39415e;font-size:13.5px}
+.law{margin-top:16px;text-align:center;color:var(--blue2);font:italic 500 13px/1.5 Georgia,serif}
+.sig{margin-top:26px;text-align:center;color:var(--blue2);font:600 11px ui-monospace,monospace;letter-spacing:.14em}
+.sig b{color:var(--ink)}
+#fail{display:none;position:fixed;left:12px;right:12px;bottom:12px;z-index:99;background:#2a1410;border:1px solid #b0463a;color:#ffd7d0;padding:12px 15px;border-radius:10px;font:12px ui-monospace,monospace;white-space:pre-wrap}
+</style></head><body>
+<canvas id="bg"></canvas>
+<div class="wrap">
+  <div class="dtag">✦ <b>OURANOS</b> · the domain that looks up</div>
+  <h1>THE FIRST LIGHT</h1>
+  <p class="sub">Everywhere you point, a faint hiss: the oldest light there is, set free when the universe first turned transparent. Stretched by fourteen billion years of expansion, it now glows at just under three degrees above absolute zero — the most perfect blackbody nature has ever shown us.</p>
+  <div class="tier"><span class="chip lit">◆ LIT</span><span class="chip amb">▲ AMBER</span></div>
+  <div class="card">
+    <div class="stagewrap"><canvas id="stage" width="900" height="440"></canvas></div>
+    <div class="controls"><span class="rng">TEMPERATURE (log) <input type="range" id="temp" min="0" max="100" value="15"></span><button class="btn" id="cmb">◄ the CMB (2.725 K)</button><button class="btn" id="star">☉ the Sun (5772 K)</button></div>
+    <div class="readout"><div class="ro"><div class="k">temperature</div><div class="v" id="roT">2.725 K</div></div><div class="ro"><div class="k">peak wavelength</div><div class="v" id="roPeak">—</div></div><div class="ro"><div class="k">band</div><div class="v" id="roBand">—</div></div><div class="ro"><div class="k">the CMB</div><div class="v" id="roMatch">—</div></div></div>
+  </div>
+  <div class="honesty">
+    <div class="hz lit"><h4>◆ LIT — verified / checkable</h4><p>A true Planck blackbody spectrum B(λ,T) is plotted live over a logarithmic temperature dial (0.5 K → 30,000 K), and Wien's displacement law λ_peak = b/T (b = 2.898×10⁻³ m·K) marks its peak — both real physics. At T = 2.725 K the peak sits at ~1.06 mm, deep in the microwave; that is the measured CMB temperature, and the CMB matches a blackbody to better than one part in 10⁴ — the most perfect blackbody known. Slide the temperature and Wien's law slides the peak (hotter → bluer, the Sun at 5772 K peaking in the visible) exactly as drawn.</p></div>
+    <div class="hz amb"><h4>▲ AMBER — the figure</h4><p>'The first light / the universe turned transparent' is the recombination story (real, ~380,000 years after the Big Bang). The instrument shows a single blackbody curve and Wien's law, not the full CMB power spectrum with its acoustic peaks; and the band labels are indicative. The physics of the curve is exact; the cosmic narration is the frame.</p></div>
+    
+  </div>
+  <div class="law">OURANOS: the heavens are measured, not merely admired — every light up there is a number we can reach by geometry.</div>
+  <div class="sig">David Lee Wise / ROOT0 / TriPod LLC &nbsp;·&nbsp; with <b>AVAN</b></div>
+</div>
+<div id="fail"></div>
+<script>
+window.onerror=function(m,s,l,c,e){var f=document.getElementById('fail');if(f){f.style.display='block';f.textContent='⚠ '+m+' @'+l+':'+c+(e&&e.stack?'\n'+e.stack:'');}};
+</script>
+<script>
+(function(){
+  var cv=document.getElementById('bg'); if(!cv) return;
+  function fallback(){var c=cv.getContext&&cv.getContext('2d');if(!c)return;
+    function f(){var w=cv.width=innerWidth,h=cv.height=innerHeight;
+      var g=c.createRadialGradient(w*0.5,h*0.42,0,w*0.5,h*0.42,Math.max(w,h)*0.8);
+      g.addColorStop(0,'#f6f0e2');g.addColorStop(1,'#e9dfca');c.fillStyle=g;c.fillRect(0,0,w,h);}
+    f();addEventListener('resize',f);}
+  var gl;try{gl=cv.getContext('webgl',{antialias:true,alpha:false})||cv.getContext('experimental-webgl');}catch(e){}
+  if(!gl){fallback();return;}
+  function m4mul(a,b){var o=new Array(16);for(var r=0;r<4;r++)for(var c=0;c<4;c++){var s=0;for(var k=0;k<4;k++)s+=a[k*4+r]*b[c*4+k];o[c*4+r]=s;}return o;}
+  function persp(f,asp,n,fa){var t=1/Math.tan(f/2);return[t/asp,0,0,0,0,t,0,0,0,0,(fa+n)/(n-fa),-1,0,0,(2*fa*n)/(n-fa),0];}
+  function rotY(a){var c=Math.cos(a),s=Math.sin(a);return[c,0,-s,0,0,1,0,0,s,0,c,0,0,0,0,1];}
+  function rotX(a){var c=Math.cos(a),s=Math.sin(a);return[1,0,0,0,0,c,s,0,0,-s,c,0,0,0,0,1];}
+  function rotZ(a){var c=Math.cos(a),s=Math.sin(a);return[c,s,0,0,-s,c,0,0,0,0,1,0,0,0,0,1];}
+  function trans(x,y,z){return[1,0,0,0,0,1,0,0,0,0,1,0,x,y,z,1];}
+  // rings: equator (XZ), ecliptic (tilt 23.4 about X), two meridians (XY, YZ)
+  var lineSegs=[], N=72, R=1.55;
+  function ring(mat){for(var i=0;i<N;i++){var a=i/N*2*Math.PI,b=(i+1)/N*2*Math.PI;
+    var A=[Math.cos(a)*R,0,Math.sin(a)*R], B=[Math.cos(b)*R,0,Math.sin(b)*R];
+    function tf(p){return [mat[0]*p[0]+mat[4]*p[1]+mat[8]*p[2], mat[1]*p[0]+mat[5]*p[1]+mat[9]*p[2], mat[2]*p[0]+mat[6]*p[1]+mat[10]*p[2]];}
+    A=tf(A);B=tf(B);lineSegs.push(A[0],A[1],A[2],B[0],B[1],B[2]);}}
+  ring(rotX(0));                 // equator
+  ring(rotX(0.4084));            // ecliptic (23.4deg)
+  ring(m4mul(rotZ(Math.PI/2),rotX(0)));  // meridian
+  ring(rotZ(Math.PI/2));         // other meridian
+  var lbuf=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,lbuf);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(lineSegs),gl.STATIC_DRAW);
+  // stars: pseudo-random points on the sphere
+  var star=[]; var seed=7; function rnd(){seed=(seed*1103515245+12345)&0x7fffffff;return seed/0x7fffffff;}
+  for(var i=0;i<140;i++){var u=rnd()*2-1,th=rnd()*2*Math.PI,r2=Math.sqrt(1-u*u);star.push(r2*Math.cos(th)*R,u*R,r2*Math.sin(th)*R);}
+  var sbuf=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,sbuf);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(star),gl.STATIC_DRAW);
+  var VS='attribute vec3 p;uniform mat4 mvp;uniform float ps;varying float d;void main(){vec4 q=mvp*vec4(p,1.0);d=p.y;gl_Position=q;gl_PointSize=ps;}';
+  var FS='precision mediump float;varying float d;uniform vec3 col;uniform float amul;void main(){float a=(0.5+0.5*(d/1.6));gl_FragColor=vec4(col,clamp(a*amul,0.05,0.5));}';
+  function sh(t,s){var o=gl.createShader(t);gl.shaderSource(o,s);gl.compileShader(o);if(!gl.getShaderParameter(o,gl.COMPILE_STATUS))throw gl.getShaderInfoLog(o);return o;}
+  var prog;try{prog=gl.createProgram();gl.attachShader(prog,sh(gl.VERTEX_SHADER,VS));gl.attachShader(prog,sh(gl.FRAGMENT_SHADER,FS));gl.linkProgram(prog);if(!gl.getProgramParameter(prog,gl.LINK_STATUS))throw'link';}catch(e){fallback();return;}
+  gl.useProgram(prog);var aP=gl.getAttribLocation(prog,'p'),uMVP=gl.getUniformLocation(prog,'mvp'),uPS=gl.getUniformLocation(prog,'ps'),uCol=gl.getUniformLocation(prog,'col'),uAm=gl.getUniformLocation(prog,'amul');
+  gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);
+  var t0=null;
+  function frame(t){requestAnimationFrame(frame);if(t0===null)t0=t;var tt=(t-t0)*0.001;
+    var w=cv.width=innerWidth,h=cv.height=innerHeight;gl.viewport(0,0,w,h);
+    gl.clearColor(0.949,0.925,0.867,1.0);gl.clear(gl.COLOR_BUFFER_BIT);
+    var pr=persp(1.0,w/h,0.1,50);var mv=m4mul(trans(0,0,-4.4),m4mul(rotX(-0.45),rotY(tt*0.09)));
+    gl.uniformMatrix4fv(uMVP,false,m4mul(pr,mv));
+    // stars (gold)
+    gl.bindBuffer(gl.ARRAY_BUFFER,sbuf);gl.enableVertexAttribArray(aP);gl.vertexAttribPointer(aP,3,gl.FLOAT,false,0,0);
+    gl.uniform1f(uPS,2.5);gl.uniform3f(uCol,0.78,0.58,0.18);gl.uniform1f(uAm,1.0);gl.drawArrays(gl.POINTS,0,star.length/3);
+    // rings (celestial blue)
+    gl.bindBuffer(gl.ARRAY_BUFFER,lbuf);gl.vertexAttribPointer(aP,3,gl.FLOAT,false,0,0);
+    gl.uniform1f(uPS,1.0);gl.uniform3f(uCol,0.25,0.36,0.75);gl.uniform1f(uAm,0.6);gl.lineWidth(1);gl.drawArrays(gl.LINES,0,lineSegs.length/3);
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
+<script>
+(function(){
+  var cv=document.getElementById('stage'); var ctx=cv&&cv.getContext('2d'); if(!ctx)return;
+  var DPR=Math.min(window.devicePixelRatio||1,2);
+  function size(){var w=cv.clientWidth||900;cv.width=Math.round(w*DPR);cv.height=Math.round((w*440/900)*DPR);}
+  size(); addEventListener('resize',size);
+  var env={cv:cv,ctx:ctx,DPR:DPR,W:function(){return cv.width/DPR;},H:function(){return cv.height/DPR;},
+    set:function(id,val,cls){var e=document.getElementById(id);if(e){e.textContent=val;if(cls!=null)e.className='v '+cls;}}};
+  var t0=null, inited=false;
+  function loop(t){requestAnimationFrame(loop);if(t0===null)t0=t;env.t=(t-t0)*0.001;
+    if(!inited&&window.__INST__){inited=true;if(window.__INST__.init)window.__INST__.init(env);}
+    ctx.setTransform(DPR,0,0,DPR,0,0);
+    if(window.__INST__&&window.__INST__.draw)window.__INST__.draw(env);}
+  requestAnimationFrame(loop);
+})();
+</script>
+<script>
+(function(){
+  var s=15, ENV;
+  function tk(){var lo=Math.log10(0.5),hi=Math.log10(30000);return Math.pow(10,lo+s/100*(hi-lo));}
+  function setT(t){var lo=Math.log10(0.5),hi=Math.log10(30000);s=(Math.log10(t)-lo)/(hi-lo)*100;document.getElementById('temp').value=s;}
+  function peak(t){return 2.898e-3/t;} // metres
+  function bandOf(lp){return lp>1e-3?'microwave':lp>7.5e-7?'infrared':lp>3.8e-7?'visible':lp>1e-8?'ultraviolet':'X-ray';}
+  function refresh(){if(!ENV)return;var T=tk(),lp=peak(T);
+    ENV.set('roT',T<10?T.toFixed(3)+' K':T.toFixed(0)+' K');
+    ENV.set('roPeak',lp>1e-4?(lp*1e3).toFixed(2)+' mm':(lp*1e9).toFixed(0)+' nm',lp>1e-4?'c':'a');
+    var band=bandOf(lp);ENV.set('roBand',band,band==='microwave'?'c':(band==='visible'?'a':''));
+    ENV.set('roMatch',(Math.abs(T-2.725)<0.05)?'☑ the afterglow (2.725 K)':'—',(Math.abs(T-2.725)<0.05)?'g':'');}
+  window.__INST__={init:function(env){ENV=env;
+    document.getElementById('temp').oninput=function(e){s=+e.target.value;refresh();};
+    document.getElementById('cmb').onclick=function(){setT(2.725);refresh();};
+    document.getElementById('star').onclick=function(){setT(5772);refresh();};refresh();},
+   draw:function(env){var c=env.ctx,w=env.W(),h=env.H();c.clearRect(0,0,w,h);
+     var T=tk();
+     var x0=54,y0=h-40,pw=w-x0-24,ph=h-70;
+     c.strokeStyle='rgba(58,91,191,.35)';c.lineWidth=1;c.beginPath();c.moveTo(x0,y0-ph);c.lineTo(x0,y0);c.lineTo(x0+pw,y0);c.stroke();
+     // plot B(lambda) over a log-lambda axis from 1e-7 m to 1e-2 m
+     var lmin=Math.log10(1e-7), lmax=Math.log10(1e-2);
+     function Bl(lam){var hh=6.626e-34,cc=3e8,kk=1.381e-23;var x=hh*cc/(lam*kk*T);return (2*hh*cc*cc)/(Math.pow(lam,5)*(Math.exp(Math.min(700,x))-1));}
+     var maxB=0,vals=[];for(var i=0;i<=200;i++){var L=Math.pow(10,lmin+(i/200)*(lmax-lmin));var b=Bl(L);vals.push(b);if(b>maxB)maxB=b;}
+     c.strokeStyle='#3a5bbf';c.lineWidth=2.5;c.beginPath();
+     for(var i=0;i<=200;i++){var X=x0+(i/200)*pw,Y=y0-Math.min(1,vals[i]/maxB)*ph;i?c.lineTo(X,Y):c.moveTo(X,Y);}c.stroke();
+     c.fillStyle='rgba(58,91,191,.10)';c.lineTo(x0+pw,y0);c.lineTo(x0,y0);c.fill();
+     // Wien peak marker
+     var lp=2.898e-3/T;var px=x0+((Math.log10(lp)-lmin)/(lmax-lmin))*pw;
+     c.strokeStyle='#c8952e';c.lineWidth=2;c.setLineDash([4,4]);c.beginPath();c.moveTo(px,y0-ph);c.lineTo(px,y0);c.stroke();c.setLineDash([]);
+     c.fillStyle='rgba(200,149,46,.9)';c.font='600 11px ui-monospace,monospace';c.textAlign='center';c.fillText('λ_peak (Wien)',px,y0-ph-4);
+     // band labels
+     c.textAlign='left';c.fillStyle='rgba(109,113,134,.7)';c.font='600 10px ui-monospace,monospace';
+     function bx(m){return x0+((Math.log10(m)-lmin)/(lmax-lmin))*pw;}
+     c.fillText('UV',bx(2e-7),y0+16);c.fillText('visible',bx(5.5e-7),y0+16);c.fillText('infrared',bx(1e-5),y0+16);c.fillText('microwave',bx(1.5e-3),y0+16);
+     c.fillStyle='rgba(38,50,79,.7)';c.font='600 11px ui-monospace,monospace';c.fillText('blackbody B(λ, '+ (T<10?T.toFixed(3):T.toFixed(0)) +' K)',x0+8,20);
+   }};
+})();
+</script>
+</body></html>
